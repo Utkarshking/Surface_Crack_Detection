@@ -1,0 +1,55 @@
+.background-border {
+  margin-top:20px;
+  position: relative;
+  top: 50%;
+  left: 35%;
+  width: 500px;
+  height: 500px;
+  background-color: white;
+  border: 3px dashed blue;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 255, 0.5);
+}
+.upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  margin-top:10px;
+  cursor: pointer;
+  border: 1px solid blue;
+  padding: 25px;
+  border-radius: 5px;
+}
+
+.file-label span {
+  font-size: 20px;
+}
+.cross{
+  right:0px;
+  position: absolute;
+  border-radius:4%;
+}
+
+.image-box {
+  display: flex; /* Use flexbox to align the image and add padding */
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc; /* Add a border */
+  /* padding: 25px; */
+  width: 100px; /* Set the width of the box */
+  height: 100px; /* Set the height of the box */
+}
+
+
+.image-box img {
+  max-width: 100%; /* Make sure the image fits inside the box */
+  max-height: 100%;
+  object-fit: contain; /* Make sure the image doesn't get stretched */
+}
