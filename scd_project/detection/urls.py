@@ -9,8 +9,11 @@ urlpatterns = [
 	# path('image_upload', surface_image_view, name='image_upload'),
 	path('api/csrf_token/', views.get_csrf_token, name='get_csrf_token'),
 	path('upload_file/', upload_file, name='upload_file'),
-]
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
 	urlpatterns += static(settings.MEDIA_URL,
 						document_root=settings.MEDIA_ROOT)
+
+# urls.py
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

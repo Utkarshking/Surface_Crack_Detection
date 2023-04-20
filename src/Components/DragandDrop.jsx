@@ -1,32 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import "../drop.css";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
+import Modal from "react-bootstrap/Modal";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import axios from "axios";
 
 function DragandDrop() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(null);
-  const [csrfToken, setCsrfToken] = useState("");
   const [PredictionResult, SetPredictionResult] = useState("");
-  useEffect(() => {
-    const getCsrfToken = async () => {
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:4000/api/csrf_token/"
-        );
-        setCsrfToken(response.data.csrfToken);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const [AreaPercent,setAreaPercent]=useState(0);
+  const[LocalisationImages,setLocalisationImages]=useState([]);
+  const values = [true];
+  const [fullscreen, setFullscreen] = useState(true);
+  const [show, setShow] = useState(false);
 
-    getCsrfToken();
-  }, []);
-
+  const handleShow = (breakpoint) => {
+    setFullscreen(breakpoint);
+    setShow(true);
+  };
   const handleFileChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      // console.log(event.target.files[0]);
       setSelectedFile(event.target.files[0]);
       SetPredictionResult("");
     }
@@ -34,7 +31,6 @@ function DragandDrop() {
 
   const handleDrop = (event) => {
     if (event.target.files && event.target.files[0]) {
-      // console.log(event.target.files[0]);
       setSelectedFile(event.target.files[0]);
       SetPredictionResult("");
     }
@@ -58,19 +54,18 @@ function DragandDrop() {
     setIsProcessing(true);
     const formdata = new FormData();
     formdata.append("file", selectedFile);
-    console.log(selectedFile);
     const config = {
       headers: {
         "content-type": "multipart/form-data",
-        "X-CSRFToken": csrfToken,
       },
     };
     axios
       .post("http://127.0.0.1:4000/upload_file/", formdata, config)
       .then((res) => {
-        SetPredictionResult(res.data.message);
+        SetPredictionResult(res.data.prediction);
+        setLocalisationImages(res.data.localisationimage);
+        setAreaPercent(res.data.areapercent)
         setIsProcessing(false);
-        console.log(PredictionResult);
       })
       .catch((err) => {
         console.log(err.message);
@@ -97,7 +92,7 @@ function DragandDrop() {
           <span>
             {selectedFile
               ? selectedFile.name
-              : "Drag and drop files here or click to upload"}
+              : "Click Here to Upload Image"}
           </span>
         </label>
         <br />
@@ -145,14 +140,63 @@ function DragandDrop() {
           </>
         )}
         {PredictionResult && (
-          <p
-            className="fs-3"
-            style={{
-              color: PredictionResult.includes("No Surface Crack") ? "green" : "red",
-            }}
-          >
-            {PredictionResult}
-          </p>
+          <>
+            <p
+              className="fs-3"
+              style={{
+                color: PredictionResult.includes("No Surface Crack")
+                  ? "green"
+                  : "red",
+              }}
+            >
+              {PredictionResult}
+            </p>
+            {values.map((v, idx) => (
+              <Button
+                key={idx}
+                className="me-2 mb-2"
+                onClick={() => handleShow(v)}
+              >
+                View Localisation
+                {typeof v === "string" && `below ${v.split("-")[0]}`}
+              </Button>
+            ))}
+            <Modal
+              show={show}
+              fullscreen={fullscreen}
+              onHide={() => setShow(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Localisation Images and Details</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Container>
+                  <Row>
+                    <Col>
+                      <img
+                        src={`data:image/jpeg;base64,${LocalisationImages[0]}`}
+                        alt="Selected File"
+                      />
+                    </Col>
+                    <Col>
+                      <img
+                        src={`data:image/jpeg;base64,${LocalisationImages[1]}`}
+                        alt="Selected File"
+                      />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col><h3>Binary Image</h3></Col>
+                    <Col><h3>Result Image</h3></Col>
+                  </Row>
+                  <br></br>
+                  <Row>
+                    <h3>{`Area percentage of the crack : ${AreaPercent*100}%`}</h3>
+                  </Row>
+                </Container>
+              </Modal.Body>
+            </Modal>
+          </>
         )}
       </div>
     </div>
