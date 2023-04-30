@@ -4,6 +4,7 @@ from django.http import HttpResponseBadRequest
 from django.urls import resolve
 from .forms import *
 from tensorflow import keras
+import tensorflow as tf
 import cv2 as cv
 import numpy as np
 import json
@@ -55,7 +56,9 @@ def surface_image_view(request):
 @csrf_exempt
 def upload_file(request):
     prediction_var = ''
-    model = keras.models.load_model('savedModels/custom_cnn.h5')
+    model = keras.models.load_model('savedModels/custom_cnn.h5',compile=False)
+    adam = tf.keras.optimizers.Adam()
+    model.compile(loss='binary_crossentropy', optimizer=adam, metrics=['acc'])
     if request.method == "POST":
         try:
             file = request.FILES.get("file")
@@ -71,8 +74,8 @@ def upload_file(request):
                 prediction_var = 'Surface Crack Detected'
             else:
                 prediction_var = 'No Surface Crack'
-            resultpath="E:/major2/crackdetection/scd_project/detection/result.jpg"
-            binarypath="E:/major2/crackdetection/scd_project/detection/binary.jpg"
+            resultpath="result.jpg"
+            binarypath="binary.jpg"
             src = cv.imread(img_path)
             pixels = get_num_pixels(img_path)
             gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
