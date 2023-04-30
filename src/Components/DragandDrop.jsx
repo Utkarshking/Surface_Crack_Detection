@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import "../drop.css";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
@@ -6,14 +6,15 @@ import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import Table from 'react-bootstrap/Table';
 import axios from "axios";
 
 function DragandDrop() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(null);
   const [PredictionResult, SetPredictionResult] = useState("");
-  const [AreaPercent,setAreaPercent]=useState(0);
-  const[LocalisationImages,setLocalisationImages]=useState([]);
+  const [AreaPercent, setAreaPercent] = useState(0);
+  const [LocalisationImages, setLocalisationImages] = useState([]);
   const values = [true];
   const [fullscreen, setFullscreen] = useState(true);
   const [show, setShow] = useState(false);
@@ -64,7 +65,7 @@ function DragandDrop() {
       .then((res) => {
         SetPredictionResult(res.data.prediction);
         setLocalisationImages(res.data.localisationimage);
-        setAreaPercent(res.data.areapercent)
+        setAreaPercent(res.data.areapercent);
         setIsProcessing(false);
       })
       .catch((err) => {
@@ -90,9 +91,7 @@ function DragandDrop() {
         <label htmlFor="file-input" className="file-label">
           <i className="ri-file-upload-line ri-5x"></i>
           <span>
-            {selectedFile
-              ? selectedFile.name
-              : "Click Here to Upload Image"}
+            {selectedFile ? "Image Uploaded" : "Click Here to Upload Image"}
           </span>
         </label>
         <br />
@@ -186,12 +185,41 @@ function DragandDrop() {
                     </Col>
                   </Row>
                   <Row>
-                    <Col><h3>Binary Image</h3></Col>
-                    <Col><h3>Result Image</h3></Col>
+                    <Col>
+                      <h3>Gray-Scale Image</h3>
+                    </Col>
+                    <Col>
+                      <h3>Result Image</h3>
+                    </Col>
                   </Row>
                   <br></br>
                   <Row>
-                    <h3>{`Area percentage of the crack : ${AreaPercent*100}%`}</h3>
+                    <Table striped bordered hover variant="dark">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Type of Metric</th>
+                          <th>Value of the Metric</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>1</td>
+                          <td>Percentage Area of the Crack</td>
+                          <td>{AreaPercent*100}</td>
+                        </tr>
+                        <tr>
+                          <td>2</td>
+                          <td>Length of the Crack</td>
+                          <td>N/A</td>
+                        </tr>
+                        <tr>
+                          <td>3</td>
+                          <td>Width of the Crack</td>
+                          <td>N/A</td>
+                        </tr>
+                      </tbody>
+                    </Table>
                   </Row>
                 </Container>
               </Modal.Body>
